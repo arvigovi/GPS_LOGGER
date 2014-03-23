@@ -49,8 +49,11 @@ static int debug;
 static void print_gpx_header(void)
 {
     char tbuf[CLIENT_DATE_MAX+1];
-
-    (void)fprintf(logfile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	(void)fprintf(logfile,"GPS Log; Start time: %s\n",unix_to_iso8601((timestamp_t)time(NULL), tbuf, sizeof(tbuf)));
+	(void)fprintf(logfile,"Timestamp,Latitude,Longitude,Speed,Altitude\n");
+	
+    /*
+	(void)fprintf(logfile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     (void)fprintf(logfile,"<gpx version=\"1.1\" creator=\"GPSD %s - %s\"\n", VERSION, GPSD_URL);
     (void)fprintf(logfile,"        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
     (void)fprintf(logfile,"        xmlns=\"http://www.topografix.com/GPX/1/1\"\n");
@@ -59,14 +62,18 @@ static void print_gpx_header(void)
     (void)fprintf(logfile," <metadata>\n");
     (void)fprintf(logfile,"  <time>%s</time>\n", unix_to_iso8601((timestamp_t)time(NULL), tbuf, sizeof(tbuf)));
     (void)fprintf(logfile," </metadata>\n");
+	*/
+	
     (void)fflush(logfile);
 }
 
 static void print_gpx_trk_end(void)
 {
-    (void)fprintf(logfile,"  </trkseg>\n");
+    /*
+	(void)fprintf(logfile,"  </trkseg>\n");
     (void)fprintf(logfile," </trk>\n");
-    (void)fflush(logfile);
+    */
+	(void)fflush(logfile);
 }
 
 static void print_gpx_footer(void)
@@ -74,23 +81,33 @@ static void print_gpx_footer(void)
     char tbuf[CLIENT_DATE_MAX+1];
 	if (intrack)
 	print_gpx_trk_end();
-	(void)fprintf(logfile,"  <time>%s</time>\n", unix_to_iso8601((timestamp_t)time(NULL), tbuf, sizeof(tbuf)));//end time - added by Arvi
-    (void)fprintf(logfile,"</gpx>\n");
-    (void)fclose(logfile);
+	
+	//(void)fprintf(logfile,"  <time>%s</time>\n", unix_to_iso8601((timestamp_t)time(NULL), tbuf, sizeof(tbuf)));//end time - added by Arvi
+    //(void)fprintf(logfile,"</gpx>\n");
+    
+	(void)fclose(logfile);
 }
 
 static void print_gpx_trk_start(void)
 {
-    (void)fprintf(logfile," <trk>\n");
+    /*
+	(void)fprintf(logfile," <trk>\n");
     (void)fprintf(logfile,"  <src>GPSD %s</src>\n", VERSION);
     (void)fprintf(logfile,"  <trkseg>\n");
-    (void)fflush(logfile);
+    */
+	
+	(void)fflush(logfile);
 }
 
 static void print_fix(struct gps_data_t *gpsdata, double time)
 {
     char tbuf[CLIENT_DATE_MAX+1];
 
+	gettimeofday(&tv,NULL);
+	timeus = 1000000 * tv.tv_sec + tv.tv_usec;
+	(void)fprintf(logfile,"%u,%f,%f,%f,%f\n",timeus, gpsdata->fix.latitude, gpsdata->fix.longitude, gpsdata->fix.speed,gpsdata->fix.altitude);
+
+/*
     (void)fprintf(logfile,"   <trkpt lat=\"%f\" lon=\"%f\">\n",
 		 gpsdata->fix.latitude, gpsdata->fix.longitude);
 	(void)fprintf(logfile,"    <lat_err>%f</lat_err>\n", gpsdata->fix.epy);//Lat Error - added by Arvi
@@ -109,7 +126,11 @@ static void print_fix(struct gps_data_t *gpsdata, double time)
     (void)fprintf(logfile,"    <time>%s</time>\n",
 		 unix_to_iso8601(time, tbuf, sizeof(tbuf)));
     // (void)fprintf(logfile,"    <src>GPSD tag=\"%s\"</src>\n", gpsdata->tag);//GPSD tag - removed by Arvi
-    if (gpsdata->status == STATUS_DGPS_FIX)
+   
+*/
+
+/*
+	if (gpsdata->status == STATUS_DGPS_FIX)
 	(void)fprintf(logfile,"    <fix>dgps</fix>\n");
     else
 	switch (gpsdata->fix.mode) {
@@ -123,9 +144,10 @@ static void print_fix(struct gps_data_t *gpsdata, double time)
 	    (void)fprintf(logfile,"    <fix>none</fix>\n");
 	    break;
 	default:
-	    /* don't print anything if no fix indicator */
+	    // don't print anything if no fix indicator 
 	    break;
 	}
+
 
     if ((gpsdata->fix.mode > MODE_NO_FIX) && (gpsdata->satellites_used > 0))
 	(void)fprintf(logfile,"    <sat>%d</sat>\n", gpsdata->satellites_used);
@@ -141,6 +163,7 @@ static void print_fix(struct gps_data_t *gpsdata, double time)
 	(void)fprintf(logfile,"    <timeus>%u</timeus>\n", timeus);//unixtime in microseconds - added by Arvi
 	
     (void)fprintf(logfile,"   </trkpt>\n");
+*/	
     (void)fflush(logfile);
 }
 
