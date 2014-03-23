@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <bcm2835.h>
+//#include <bcm2835.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
